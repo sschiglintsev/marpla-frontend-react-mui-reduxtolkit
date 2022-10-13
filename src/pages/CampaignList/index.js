@@ -128,7 +128,7 @@ export const CampaignList = () => {
                 )}
               </div>
             ) : (
-              <DataTable rows={campaign.list} />
+                 <DataTable rows={campaign.list} statusFilter={statusFilter}/>
             )}
 
             <Backdrop
