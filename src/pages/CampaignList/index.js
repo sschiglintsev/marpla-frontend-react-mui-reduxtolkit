@@ -138,7 +138,7 @@ export const CampaignList = () => {
                 color: "#fff",
                 zIndex: (theme) => theme.zIndex.drawer + 1,
               }}
-              open={false}
+              open={isGetCampaignListLoading}
             >
               <CircularProgress color="inherit" />
             </Backdrop>
