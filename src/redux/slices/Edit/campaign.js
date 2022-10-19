@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
+  filterStatus:'',
   campaignName: "",
   budget: 0,
   dailyBudget: false,
@@ -26,9 +27,12 @@ export const campaign = createSlice({
     setCount: (state, action) => {
       state.count = action.payload;
     },
+      setFilterStatus: (state, action) => {
+      state.filterStatus = action.payload;
+      },
   },
 });
 
-export const { setList, setCount } = campaign.actions;
+export const { setList, setCount, setFilterStatus } = campaign.actions;
 
 export default campaign.reducer;
