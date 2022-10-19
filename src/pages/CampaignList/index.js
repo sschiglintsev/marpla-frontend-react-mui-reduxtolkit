@@ -3,7 +3,7 @@ import "./index.scss";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useGetCountQuery, useGetListQuery } from "../../redux/api/campaigns";
-import { setCount, setList } from "../../redux/slices/Edit/campaign";
+import { setCount, setList,setFilterStatus } from "../../redux/slices/Edit/campaign";
 
 import { Backdrop, CircularProgress, ToggleButton } from "@mui/material";
 
@@ -59,6 +59,10 @@ export const CampaignList = () => {
 
   const [sort, setSort] = useState(false);
   const [statusFilter, setStatusFilter] = useState("total");
+
+  useEffect(()=>{
+    dispatch(setFilterStatus(statusFilter))
+  }, [statusFilter])
 
   const setSortHandler = (_, sort) => setSort(sort);
   const setStatusFilterHandler = (_, status) => setStatusFilter(status);
