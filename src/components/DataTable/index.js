@@ -2,32 +2,11 @@ import { DataGrid } from "@mui/x-data-grid";
 
 import { columns } from "./columns";
 import switchBaseClasses from "@mui/material/internal/switchBaseClasses";
+import {filterRows} from "../../utils";
 
 export const DataTable = ({ rows, statusFilter }) => {
-  let newRows=[];
-  if (statusFilter==="total") {
-    newRows = rows
-  }
-
-  if (statusFilter==="active") {
-    newRows = rows.filter((el)=>{
-      return el.statusId==="Активна"
-    });
-  }
-
-  if (statusFilter==="pause") {
-    newRows = rows.filter((el)=>{
-      return el.statusId==="Приостановлено"
-    });
-  }
-
-  if (statusFilter==="archive") {
-    newRows = rows.filter((el)=>{
-      return el.statusId==="Показы завершены"
-    });
-  }
-  console.log(newRows)
-  return (
+    const newRows = filterRows(rows,statusFilter);
+    return (
       <DataGrid
           style={{ minHeight: 590, width: "100%" }}
           getRowId={(newRows) => newRows.Id}
