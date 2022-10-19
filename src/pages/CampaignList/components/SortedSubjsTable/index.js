@@ -30,6 +30,7 @@ import {
 } from "../../helpers";
 
 import {
+    filterRows,
     formatPrice,
     isUndefined,
     removeArrayDuplicates,
@@ -38,6 +39,7 @@ import {
 } from "../../../../utils";
 
 import {useGetSubjNameMutation} from "../../../../redux/api/articles";
+import {useSelector} from "react-redux";
 
 const CustomizedTableContainer = styled(TableContainer)({
     ".MuiTable-root th, .MuiTable-root td": {
@@ -176,13 +178,16 @@ export const SortedSubjTable = ({rows}) => {
         },
     ] = useGetSubjNameMutation();
 
+    const filterStatus = useSelector((state) => state.campaign.filterStatus);
+    const newRows = filterRows(rows,filterStatus);
+
     const [campaigns, setCampaigns] = useState([]);
 
     useEffect(() => {
-        const articles = removeArrayDuplicates(rows.map(({nms}) => nms).flat(1));
+        const articles = removeArrayDuplicates(newRows.map(({nms}) => nms).flat(1));
 
         getSubjName({articles});
-    }, [rows]);
+    }, []);
 
     useEffect(() => {
         if (!isGetSubjNameSuccess) return;
@@ -191,7 +196,7 @@ export const SortedSubjTable = ({rows}) => {
             subjNameData
         ).map((subjName) => {
             const campaigns = removeArrayUndefined(
-                rows.map((campaign) => {
+                newRows.map((campaign) => {
                     const isArticleExists =
                         campaign.nms.findIndex(
                             (_article) =>
@@ -221,7 +226,7 @@ export const SortedSubjTable = ({rows}) => {
         );
 
         setCampaigns(campaignsSortedBySubjNameWithStats);
-    }, [isGetSubjNameSuccess]);
+    }, [isGetSubjNameSuccess,filterStatus]);
 
     return (
         <>
@@ -247,7 +252,12 @@ export const SortedSubjTable = ({rows}) => {
                     </TableHead>
                     <TableBody>
                         {campaigns &&
-                        campaigns.map((row, index) => <Row key={index} row={row}/>)}
+                        campaigns.map((row, index) => {
+                            if (row.campaigns.length) {
+                                return <Row key={index} row={row}/>
+                            }
+                           })
+                        }
                     </TableBody>
                 </Table>
             </CustomizedTableContainer>

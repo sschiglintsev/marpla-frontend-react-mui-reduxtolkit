@@ -27,11 +27,13 @@ import {
 } from "../../helpers";
 
 import {
+  filterRows,
   formatPrice,
   isUndefined,
   removeArrayDuplicates,
   roundNumber,
 } from "../../../../utils";
+import {useSelector} from "react-redux";
 
 const CustomizedTableContainer = styled(TableContainer)({
   ".MuiTable-root th, .MuiTable-root td": {
@@ -156,16 +158,18 @@ const Row = ({ row }) => {
 };
 
 export const SortedAdvertsTable = ({ rows }) => {
+  const filterStatus = useSelector((state) => state.campaign.filterStatus);
+  const newRows = filterRows(rows,filterStatus);
   const [campaigns, setCampaigns] = useState([]);
 
   useEffect(() => {
     const advertsType = removeArrayDuplicates(
-      rows.map((campaign) => campaign.Type)
+        newRows.map((campaign) => campaign.Type)
     );
 
     const campaignsSortedByAdvertsType = advertsType.map((advertType) => ({
       advertType,
-      campaigns: rows.filter((campaign) => campaign.Type === advertType),
+      campaigns: newRows.filter((campaign) => campaign.Type === advertType),
     }));
 
     const campaignsSortedByAdvertsTypeWithStats =
@@ -175,7 +179,7 @@ export const SortedAdvertsTable = ({ rows }) => {
       }));
 
     setCampaigns(campaignsSortedByAdvertsTypeWithStats);
-  }, [rows]);
+  }, [filterStatus]);
 
   return (
     <CustomizedTableContainer

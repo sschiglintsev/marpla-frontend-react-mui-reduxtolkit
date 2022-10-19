@@ -30,12 +30,14 @@ import {
 } from "../../helpers";
 
 import {
+    filterRows,
     formatPrice,
     isUndefined,
     removeArrayDuplicates,
     removeArrayUndefined,
     roundNumber,
 } from "../../../../utils";
+import {useSelector} from "react-redux";
 
 const CustomizedTableContainer = styled(TableContainer)({
     ".MuiTable-root th, .MuiTable-root td": {
@@ -182,10 +184,13 @@ export const SortedArticleTable = ({rows}) => {
         },
     ] = useGetSubjNameMutation();
 
+    const filterStatus = useSelector((state) => state.campaign.filterStatus);
+    const newRows = filterRows(rows,filterStatus);
+
     const [campaigns, setCampaigns] = useState([]);
 
     useEffect(() => {
-        const articles = removeArrayDuplicates(rows.map(({nms}) => nms).flat(1));
+        const articles = removeArrayDuplicates(newRows.map(({nms}) => nms).flat(1));
 
         getSubjName({articles});
     }, []);
@@ -196,7 +201,7 @@ export const SortedArticleTable = ({rows}) => {
         const campaignsSortedByArticle = subjNameData.map((articleItem) => ({
             article: articleItem,
             campaigns: removeArrayUndefined(
-                rows.map((campaign) => {
+                newRows.map((campaign) => {
                     const isArticleExists =
                         campaign.nms.findIndex(
                             (_article) => _article === articleItem.article
@@ -217,7 +222,7 @@ export const SortedArticleTable = ({rows}) => {
         );
 
         setCampaigns(campaignsSortedByArticleWithStats);
-    }, [isGetSubjNameSuccess]);
+    }, [isGetSubjNameSuccess,filterStatus]);
 
     return (
         <>
@@ -243,7 +248,12 @@ export const SortedArticleTable = ({rows}) => {
                     </TableHead>
                     <TableBody>
                         {campaigns &&
-                        campaigns.map((row, index) => <Row key={index} row={row}/>)}
+                        campaigns.map((row, index) => {
+                            if (row.campaigns.length) {
+                                return <Row key={index} row={row}/>
+                            }
+                        })
+                        }
                     </TableBody>
                 </Table>
             </CustomizedTableContainer>
